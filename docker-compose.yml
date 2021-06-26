@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  node:
+    build: .
+    volumes:
+      - .:/usr/app ## monitoro a pasta atual . e envio as alterações para /usr/app
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=development
