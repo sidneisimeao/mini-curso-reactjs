@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
+import { Map, TileLayer, Marker } from "react-leaflet";
 import { Link } from "react-router-dom";
 
+import api from "../../Services/api";
 import logo from "../../assets/logo.svg";
 
 import "./styles.css";
 
+interface Item {
+  id: number;
+  title: string;
+  image_url: string;
+}
+
 const CreateLocation: React.FC = () => {
+  const [items, setItems] = useState<Item[]>([]);
+
+  useEffect(() => {
+    api.get("items").then((response) => {
+      setItems(response.data);
+    });
+  }, []);
+
   return (
     <>
       <div id="page-create-location">
@@ -49,7 +65,13 @@ const CreateLocation: React.FC = () => {
                 <h2>Endereço</h2>
                 <span>Marque o endereço no mapa</span>
               </legend>
-
+              <Map center={[-21.78842, -46.562721]} zoom={14}>
+                <TileLayer
+                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={[-21.78842, -46.562721]} />
+              </Map>
               <div className="field-group">
                 <div className="field">
                   <label htmlFor="city">Cidade</label>
@@ -67,7 +89,13 @@ const CreateLocation: React.FC = () => {
                 <h2>Ítens coletados</h2>
                 <span>Você pode marcar um ou mais ítens</span>
               </legend>
-              <ul className="items-grid"></ul>
+              <ul className="items-grid">
+                {items.map((item) => (
+                  <li key={item.id}>
+                    <img src={item.image_url} alt={item.title} />
+                  </li>
+                ))}
+              </ul>
             </fieldset>
 
             <button type="submit">Cadastrar local de coleta</button>
